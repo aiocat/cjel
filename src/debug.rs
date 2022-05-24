@@ -16,11 +16,18 @@ use std::process::exit;
 
 // output debug message and exit
 pub fn send(line: usize, column: usize, message: &str) {
-    eprintln!("[JEL] at [LINE {}] [COLUMN {}]: {}", line, column, message);
+    eprintln!("[JEL] at [LINE {line}] [COLUMN {column}]: {message}");
     exit(1);
 }
 
 // send debug message without halting
 pub fn send_message(message: &str) {
-    eprintln!("[JEL]: {}", message);
+    eprintln!("[JEL]: {message}");
+    exit(1);
+}
+
+// send debug command argument count message
+pub fn send_argc_message(name: &str, count: usize) {
+    eprintln!("[JEL]: command \"{name}\" takes {count} argument.");
+    exit(1);
 }

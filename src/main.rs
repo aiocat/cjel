@@ -15,17 +15,21 @@
 mod debug;
 mod machine;
 mod parser;
+mod variable;
 
 fn main() {
     let mut parser = parser::Parser::new(
         r#"
-        qwe
-         a
-         se
-         asd
-         s
-    print(deneme print(osuruk))
-    "#,
+        let("deneme" "dude")
+        print(get(deneme))
+
+        let(deneme "awesome!")
+
+        upgrading deneme variable and printing two times
+        upgrade(deneme)
+        print(get(deneme))
+        print(get(deneme))
+        "#,
     );
     parser.parse();
 

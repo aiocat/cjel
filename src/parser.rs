@@ -92,7 +92,7 @@ impl Parser<'_> {
         for character in self.source.chars() {
             self.collect(character);
         }
-        
+
         // clear garbage data
         self.clear_garbage();
     }
@@ -214,9 +214,7 @@ impl Parser<'_> {
 
     // clean garbage data
     fn clear_garbage(&mut self) {
-        self.output.retain(|value| { match value {
-            Token::Command(_) => true,
-            _ => false
-        } });
+        self.output
+            .retain(|value| matches!(value, Token::Command(_)));
     }
 }

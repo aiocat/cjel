@@ -68,7 +68,7 @@ impl Default for Parser<'_> {
             output: Vec::new(),
             state: ParserState::Token,
             line: 1,
-            column: 1,
+            column: 0,
         }
     }
 }
@@ -92,6 +92,9 @@ impl Parser<'_> {
         for character in self.source.chars() {
             self.collect(character);
         }
+        
+        // clear garbage data
+        self.clear_garbage();
     }
 
     // parse given character
@@ -118,6 +121,12 @@ impl Parser<'_> {
 
                 // push a placeholder
                 self.output.push(Token::PlaceHolder(0x0));
+            }
+            '\r' => return,
+            '\n' => {
+                // update column and line
+                self.line += 1;
+                self.column = 0;
             }
             ' ' => {
                 // move string argument (if exists)
@@ -178,6 +187,8 @@ impl Parser<'_> {
                 self.temp.push(character)
             }
         }
+
+        self.column += 1;
     }
 
     // collect string
@@ -199,5 +210,13 @@ impl Parser<'_> {
         } else {
             self.temp.push(character);
         }
+    }
+
+    // clean garbage data
+    fn clear_garbage(&mut self) {
+        self.output.retain(|value| { match value {
+            Token::Command(_) => true,
+            _ => false
+        } });
     }
 }

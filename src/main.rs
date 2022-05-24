@@ -19,10 +19,17 @@ mod parser;
 fn main() {
     let mut parser = parser::Parser::new(
         r#"
-    
+        qwe
+         a
+         se
+         asd
+         s
+    print(deneme print(osuruk))
     "#,
     );
     parser.parse();
+
+    dbg!(&parser.output);
 
     let mut machine = machine::Machine::new(parser.output);
     machine.process_whole();

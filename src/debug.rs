@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod parser;
-mod debug;
+use std::process::exit;
 
-fn main() {
-    let mut parser = parser::Parser::new(r"deneme(Merhaba Dünya (Naber?))");
-
-    parser.parse();
-    dbg!(&parser.output);
+// output debug message and exit
+pub fn send(line: usize, column: usize, message: &str) {
+    eprintln!("[JEL PARSER] at [LINE {}] [COLUMN {}]: {}", line, column, message);
+    exit(1);
 }

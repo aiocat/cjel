@@ -17,8 +17,11 @@ mod debug;
 mod machine;
 
 fn main() {
-    let mut parser = parser::Parser::new(r#"deneme(5 (Naber?))"#);
-
+    let mut parser = parser::Parser::new(r#"
+    
+    "#);
     parser.parse();
-    dbg!(&parser.output);
+
+    let mut machine = machine::Machine::new(parser.output);
+    machine.process_whole();
 }

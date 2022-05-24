@@ -16,6 +16,11 @@ use std::process::exit;
 
 // output debug message and exit
 pub fn send(line: usize, column: usize, message: &str) {
-    eprintln!("[JEL PARSER] at [LINE {}] [COLUMN {}]: {}", line, column, message);
+    eprintln!("[JEL] at [LINE {}] [COLUMN {}]: {}", line, column, message);
     exit(1);
+}
+
+// send debug message without halting
+pub fn send_message(message: &str)  {
+    eprintln!("[JEL]: {}", message);
 }

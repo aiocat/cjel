@@ -145,7 +145,6 @@ impl Parser<'_> {
 
                 // get argument until we find the closest command
                 let mut args: Vec<Token> = Vec::new();
-                println!("{:?}", self.output);
 
                 // get all of the arguments
                 loop {

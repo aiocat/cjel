@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::mem::take;
 use crate::debug;
+use std::mem::take;
 
 // parser state enum
 #[derive(Debug)]
 pub enum ParserState {
     Token,
-    String
+    String,
 }
 
 // token enum
 #[derive(Debug)]
 pub enum Token {
     Command(Command), // for commands
-    String(String), // for strings
-    PlaceHolder(u8) // for placeholders
+    String(String),   // for strings
+    PlaceHolder(u8),  // for placeholders
 }
 
 // implement default for token
@@ -41,7 +41,7 @@ impl Default for Token {
 // command struct
 #[derive(Debug)]
 pub struct Command {
-    pub name: String, // command name
+    pub name: String,          // command name
     pub arguments: Vec<Token>, // command arguments
 }
 
@@ -52,10 +52,10 @@ pub struct Parser<'a> {
     line: usize,
     column: usize,
 
-    source: &'a str,      // given source
-    temp: String, // temporary string to keep collected token
+    source: &'a str,        // given source
+    temp: String,           // temporary string to keep collected token
     pub output: Vec<Token>, // parser output
-    state: ParserState // parser state (normal or string collecting)
+    state: ParserState,     // parser state (normal or string collecting)
 }
 
 // implement default for parser
@@ -77,10 +77,10 @@ impl Default for Parser<'_> {
 impl<'a> Parser<'a> {
     // create new parser
     pub fn new(source: &'a str) -> Self {
-        let mut parser = Parser::default();
-        parser.source = source;
-
-        parser
+        Parser {
+            source,
+            ..Default::default()
+        }
     }
 }
 
@@ -92,9 +92,6 @@ impl Parser<'_> {
         for character in self.source.chars() {
             self.collect(character);
         }
-
-        // drop source earlier, because we don't need this anymore.
-        drop(self.source);
     }
 
     // parse given character
@@ -102,7 +99,7 @@ impl Parser<'_> {
         // match character
         match self.state {
             ParserState::Token => self.collect_token(character),
-            ParserState::String => self.collect_string(character)
+            ParserState::String => self.collect_string(character),
         }
     }
 
@@ -114,20 +111,20 @@ impl Parser<'_> {
                 let command_name = self.temp.trim().to_string();
                 self.temp = String::new();
 
-                self.output.push(Token::Command(Command{
+                self.output.push(Token::Command(Command {
                     name: command_name,
-                    arguments: Vec::new()
+                    arguments: Vec::new(),
                 }));
 
                 // push a placeholder
-                self.output.push(Token::PlaceHolder(0x0)); 
-            },
+                self.output.push(Token::PlaceHolder(0x0));
+            }
             ' ' => {
                 // move string argument (if exists)
                 if !self.temp.is_empty() {
                     self.output.push(Token::String(take(&mut self.temp)));
                 }
-            },
+            }
             '"' => {
                 // move string argument (if exists)
                 if !self.temp.is_empty() {
@@ -136,7 +133,7 @@ impl Parser<'_> {
 
                 // change state to string collecting
                 self.state = ParserState::String
-            },
+            }
             ')' => {
                 // move string argument (if exists)
                 if !self.temp.is_empty() {
@@ -149,10 +146,14 @@ impl Parser<'_> {
                 // get all of the arguments
                 loop {
                     if self.output.is_empty() {
-                        debug::send(self.line, self.column, "jel thinks you forgot to open a brace.");
+                        debug::send(
+                            self.line,
+                            self.column,
+                            "jel thinks you forgot to open a brace.",
+                        );
                     } else if let Some(Token::PlaceHolder(0x0)) = self.output.last() {
                         self.output.pop();
-                        break
+                        break;
                     }
 
                     args.push(self.output.pop().unwrap());
@@ -165,9 +166,13 @@ impl Parser<'_> {
                 if let Some(Token::Command(command)) = self.output.last_mut() {
                     command.arguments = args;
                 } else {
-                    debug::send(self.line, self.column, "jel thinks you have a syntax error that he can't even solve.");
+                    debug::send(
+                        self.line,
+                        self.column,
+                        "jel thinks you have a syntax error that he can't even solve.",
+                    );
                 }
-            },
+            }
             _ => {
                 // push character to temp value
                 self.temp.push(character)

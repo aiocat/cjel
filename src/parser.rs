@@ -15,6 +15,13 @@
 use std::mem::take;
 use crate::debug;
 
+// parser state enum
+#[derive(Debug)]
+pub enum ParserState {
+    Token,
+    String
+}
+
 // token enum
 #[derive(Debug)]
 pub enum Token {
@@ -34,20 +41,21 @@ impl Default for Token {
 // command struct
 #[derive(Debug)]
 pub struct Command {
-    name: String, // command name
-    arguments: Vec<Token>, // command arguments
+    pub name: String, // command name
+    pub arguments: Vec<Token>, // command arguments
 }
 
 // parser struct
 #[derive(Debug)]
 pub struct Parser<'a> {
-    source: &'a str,      // given source
-    temp: String, // temporary string to keep collected token
-    pub output: Vec<Token>, // parser output
-
     // these objects for debugging
     line: usize,
     column: usize,
+
+    source: &'a str,      // given source
+    temp: String, // temporary string to keep collected token
+    pub output: Vec<Token>, // parser output
+    state: ParserState // parser state (normal or string collecting)
 }
 
 // implement default for parser
@@ -58,6 +66,7 @@ impl Default for Parser<'_> {
             source: "",
             temp: String::new(),
             output: Vec::new(),
+            state: ParserState::Token,
             line: 1,
             column: 1,
         }
@@ -91,6 +100,14 @@ impl Parser<'_> {
     // parse given character
     fn collect(&mut self, character: char) {
         // match character
+        match self.state {
+            ParserState::Token => self.collect_token(character),
+            ParserState::String => self.collect_string(character)
+        }
+    }
+
+    // collect normal token
+    fn collect_token(&mut self, character: char) {
         match character {
             '(' => {
                 // create new temporary command
@@ -110,7 +127,16 @@ impl Parser<'_> {
                 if !self.temp.is_empty() {
                     self.output.push(Token::String(take(&mut self.temp)));
                 }
-            }
+            },
+            '"' => {
+                // move string argument (if exists)
+                if !self.temp.is_empty() {
+                    self.output.push(Token::String(take(&mut self.temp)));
+                }
+
+                // change state to string collecting
+                self.state = ParserState::String
+            },
             ')' => {
                 // move string argument (if exists)
                 if !self.temp.is_empty() {
@@ -136,14 +162,38 @@ impl Parser<'_> {
                 // reverse arguments
                 args.reverse();
 
-                // get command
+                // set arguments
                 if let Some(Token::Command(command)) = self.output.last_mut() {
                     command.arguments = args;
                 } else {
                     debug::send(self.line, self.column, "jel thinks you have a syntax error that he can't even solve.");
                 }
             },
-            _ => self.temp.push(character)
+            _ => {
+                // push character to temp value
+                self.temp.push(character)
+            }
+        }
+    }
+
+    // collect string
+    fn collect_string(&mut self, character: char) {
+        // check string close
+        if character == '"' {
+            // check if has an escape
+            if !self.temp.is_empty() {
+                let last_character = self.temp.chars().last().unwrap();
+
+                if last_character != '\\' {
+                    self.state = ParserState::Token;
+                    self.output.push(Token::String(take(&mut self.temp)));
+                }
+            } else {
+                self.state = ParserState::Token;
+                self.output.push(Token::String(take(&mut self.temp)));
+            }
+        } else {
+            self.temp.push(character);
         }
     }
 }

@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod parser;
-mod debug;
-mod machine;
+use crate::parser;
 
-fn main() {
-    let mut parser = parser::Parser::new(r#"deneme(5 (Naber?))"#);
+// machine struct
+pub struct Machine {
+    instructions: Vec<parser::Token> // instructions for machine
+}
 
-    parser.parse();
-    dbg!(&parser.output);
+// implement default for machine
+impl Default for Machine {
+    // add default function for default trait
+    fn default() -> Self {
+        Self {
+            instructions: Vec::new()
+        }
+    }
 }

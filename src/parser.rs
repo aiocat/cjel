@@ -39,7 +39,7 @@ impl Default for Token {
 }
 
 // command struct
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Command {
     pub name: String,          // command name
     pub arguments: Vec<Token>, // command arguments
@@ -116,7 +116,7 @@ impl Parser<'_> {
 
                 self.output.push(Token::Command(Command {
                     name: command_name,
-                    arguments: Vec::new(),
+                    ..Default::default()
                 }));
 
                 // push a placeholder

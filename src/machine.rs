@@ -101,6 +101,29 @@ impl Machine {
                 "pubd" => self.pubd(command.arguments),
                 // from commands/import.rs
                 "import" => self.import(command.arguments),
+                // empty command is for concat objects
+                "" => {
+                    let mut arguments: Vec<String> = Vec::new();
+
+                    // iterate over given arguments
+                    for arg in command.arguments {
+                        // check token type
+                        if let parser::Token::String(value) = arg {
+                            // push string
+                            arguments.push(value);
+                        } else if let parser::Token::Command(_) = arg {
+                            // run command and push string
+                            if let parser::Token::String(value) = self.process(arg) {
+                                // push string
+                                arguments.push(value);
+                            }
+                        }
+                    }
+
+                    // return object
+                    let calculated_string = arguments.join(" ");
+                    parser::Token::String(calculated_string)
+                },
                 unknown => {
                     // give an error
                     debug::send_message(&format!(

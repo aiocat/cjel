@@ -1,2 +1,4 @@
 import(test.jel)
 print(get("test.jel/deneme"))
+let(deneme (merhaba beyler))
+print(get(deneme))

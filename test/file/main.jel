@@ -1,1 +1,2 @@
-print(Here we go?)
+import(test.jel)
+print(get(deneme))

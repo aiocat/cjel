@@ -96,6 +96,8 @@ impl Machine {
                 // from commands/dylib.rs
                 "dylib" => self.dylib(command.arguments),
                 "native" => self.native(command.arguments),
+                // from commands/import.rs
+                "import" => self.import(command.arguments),
                 unknown => {
                     // give an error
                     debug::send_message(&format!(

@@ -16,8 +16,8 @@ mod debug;
 mod machine;
 mod parser;
 
-use std::fs::read_to_string;
 use std::env;
+use std::fs::read_to_string;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -25,13 +25,20 @@ fn main() {
     // check command line count
     if args.len() < 2 {
         eprintln!("[JEL] at [READING]: file name must be given.");
-        return
+        return;
     }
 
-    // read file
+    // get current directory
+    let mut path = env::current_dir().unwrap();
+
+    // read file and set directory
     let file_name = &args[1];
-    let file_data = read_to_string(file_name).unwrap();
-    
+    path.push(file_name);
+
+    let file_data = read_to_string(&path).unwrap();
+    path.pop();
+    let _ = env::set_current_dir(path);
+
     // run parser
     let mut parser = parser::Parser::new(&file_data);
     parser.parse();

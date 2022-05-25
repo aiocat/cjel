@@ -16,17 +16,29 @@ mod debug;
 mod machine;
 mod parser;
 
+use std::fs::read_to_string;
+use std::env;
+
 fn main() {
-    let mut parser = parser::Parser::new(
-        r#"
-        dylib(testing E:\Hersey\Acatp\jel\test\ffi\libtest.dll)
-        print(native(testing call_from_c "6"))
-        "#,
-    );
+    let args: Vec<String> = env::args().collect();
+
+    // check command line count
+    if args.len() < 2 {
+        eprintln!("[JEL] at [READING]: file name must be given.");
+        return
+    }
+
+    // read file
+    let file_name = &args[1];
+    let file_data = read_to_string(file_name).unwrap();
+    
+    // run parser
+    let mut parser = parser::Parser::new(&file_data);
     parser.parse();
 
     // dbg!(&parser.output);
 
+    // run interpreter
     let mut machine = machine::Machine::new(parser.output);
     machine.process_whole();
 }

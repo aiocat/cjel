@@ -14,5 +14,5 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
-gcc -c -Wall -Werror -fpic test.c
-gcc -shared -o libtest.dll test.o
+cargo build --release
+move .\target\release\jel.exe .\jel.exe

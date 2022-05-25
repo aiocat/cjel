@@ -23,7 +23,7 @@ pub enum ParserState {
 }
 
 // token enum
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Token {
     Command(Command), // for commands
     String(String),   // for strings
@@ -39,7 +39,7 @@ impl Default for Token {
 }
 
 // command struct
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Command {
     pub name: String,          // command name
     pub arguments: Vec<Token>, // command arguments

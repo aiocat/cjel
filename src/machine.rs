@@ -21,8 +21,9 @@ use std::rc::Rc;
 // machine struct
 pub struct Machine {
     pub instructions: Vec<parser::Token>, // instructions for machine
-    pub variables: Vec<commands::variable::VariableData>, // variables stored here
-    pub functions: Rc<Vec<commands::function::FunctionData>>, // functions stored here
+    pub variables: Vec<commands::variable::VariableData>, // variables are stored here
+    pub functions: Rc<Vec<commands::function::FunctionData>>, // functions are stored here
+    pub dynamic_libs: Vec<commands::dylib::DynamicLibraryData>, // dynamic libraries are stored here
 }
 
 // implement default for machine
@@ -33,6 +34,7 @@ impl Default for Machine {
             instructions: Vec::new(),
             variables: Vec::new(),
             functions: Rc::new(Vec::new()),
+            dynamic_libs: Vec::new(),
         }
     }
 }
@@ -70,6 +72,9 @@ impl Machine {
                 "do" => self.r#do(command.arguments),
                 "function" => self.function(command.arguments),
                 "call" => self.call(command.arguments),
+                // from commands/dylib.rs
+                "dylib" => self.dylib(command.arguments),
+                "native" => self.native(command.arguments),
                 _ => {
                     // give an error
                     debug::send_message("unknown command");

@@ -1,3 +1,0 @@
-let(deneme 10)
-pubv(deneme)
-print(Called test.jel File)

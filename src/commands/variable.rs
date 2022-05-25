@@ -65,7 +65,7 @@ impl machine::Machine {
         taken.insert(variable_name, VariableData::new(variable_value));
         self.variables.set(taken);
 
-        parser::Token::String(String::from("nil"))
+        crate::nil_token!()
     }
 
     // run "pubv" command
@@ -93,7 +93,7 @@ impl machine::Machine {
         self.variables.set(taken);
 
         // return nil
-        parser::Token::String(String::from("nil"))
+        crate::nil_token!()
     }
 
     // run "get" command
@@ -125,6 +125,7 @@ impl machine::Machine {
         // remove variable
         taken.remove(&variable_name).unwrap();
 
+        // return variable
         self.variables.set(taken);
         parser::Token::String(will_return)
     }
@@ -155,6 +156,7 @@ impl machine::Machine {
             }
         };
 
+        // return variable
         self.variables.set(taken);
         parser::Token::String(will_return)
     }

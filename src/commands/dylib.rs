@@ -140,7 +140,7 @@ impl machine::Machine {
         self.dynamic_libs.set(taken);
 
         // return nil
-        parser::Token::String(String::from("nil"))
+        crate::nil_token!()
     }
 
     // run "native" command

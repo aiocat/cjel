@@ -101,6 +101,10 @@ impl Machine {
                 "pubd" => self.pubd(command.arguments),
                 // from commands/import.rs
                 "import" => self.import(command.arguments),
+                // from commands/compare.rs
+                "if" => self.r#if(command.arguments),
+                "equals" => self.equals(command.arguments),
+                "not" => self.not(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     let mut arguments: Vec<String> = Vec::new();
@@ -123,7 +127,7 @@ impl Machine {
                     // return object
                     let calculated_string = arguments.join(" ");
                     parser::Token::String(calculated_string)
-                },
+                }
                 unknown => {
                     // give an error
                     debug::send_message(&format!(

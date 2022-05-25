@@ -14,6 +14,7 @@
 mod commands;
 mod debug;
 mod machine;
+mod macros;
 mod parser;
 
 use std::env;

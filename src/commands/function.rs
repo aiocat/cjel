@@ -100,7 +100,7 @@ impl machine::Machine {
         self.functions.set(taken);
 
         // return nil
-        parser::Token::String(String::from("nil"))
+        crate::nil_token!()
     }
 
     // run "pubf" command
@@ -130,7 +130,7 @@ impl machine::Machine {
         self.functions.set(taken);
 
         // return nil
-        parser::Token::String(String::from("nil"))
+        crate::nil_token!()
     }
 
     // run "call" command

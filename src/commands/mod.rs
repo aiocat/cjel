@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod compare;
 pub mod dylib;
 pub mod function;
 pub mod import;

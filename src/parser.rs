@@ -212,7 +212,22 @@ impl Parser<'_> {
                 self.state = ParserState::Token;
                 self.output.push(Token::String(take(&mut self.temp)));
             }
+        } else if character == 'n' {
+            // check if is a new line
+            if !self.temp.is_empty() {
+                let last_character = self.temp.chars().last().unwrap();
+
+                if last_character == '\\' {
+                    self.temp.pop();
+                    self.temp.push('\n');
+                    return;
+                }
+            }
+
+            // push character
+            self.temp.push(character);
         } else {
+            // push character
             self.temp.push(character);
         }
     }

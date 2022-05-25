@@ -32,7 +32,7 @@ pub fn send_argc_message(name: &str, count: usize) {
     exit(1);
 }
 
-// send debug command argument count message with least 
+// send debug command argument count message with least
 pub fn send_least_argc_message(name: &str, count: usize) {
     eprintln!("[JEL]: command \"{name}\" takes least {count} argument.");
     exit(1);

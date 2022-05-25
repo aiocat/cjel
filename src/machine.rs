@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::commands;
 use crate::debug;
 use crate::parser;
-use crate::commands;
 use std::mem::take;
+use std::rc::Rc;
 
 // machine struct
 pub struct Machine {
-    pub instructions: Vec<parser::Token>,       // instructions for machine
+    pub instructions: Vec<parser::Token>, // instructions for machine
     pub variables: Vec<commands::variable::VariableData>, // variables stored here
+    pub functions: Rc<Vec<commands::function::FunctionData>>, // functions stored here
 }
 
 // implement default for machine
@@ -30,6 +32,7 @@ impl Default for Machine {
         Self {
             instructions: Vec::new(),
             variables: Vec::new(),
+            functions: Rc::new(Vec::new()),
         }
     }
 }
@@ -65,6 +68,8 @@ impl Machine {
                 "upgrade" => self.upgrade(command.arguments),
                 // from commands/function.rs
                 "do" => self.r#do(command.arguments),
+                "function" => self.function(command.arguments),
+                "call" => self.call(command.arguments),
                 _ => {
                     // give an error
                     debug::send_message("unknown command");

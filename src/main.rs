@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod commands;
 mod debug;
 mod machine;
 mod parser;
-mod commands;
 
 fn main() {
     let mut parser = parser::Parser::new(
         r#"
-        do(
-            let(deneme 10)
-            print(get(deneme))
-        )
+        function(mehmet do( 
+            function(ahmet do(
+                let(qwe 20)
+                get(qwe)
+            ))
 
-        print(get(deneme))
+            let(deneme call(ahmet))
+            get(deneme)
+        ))
+
+        print(call(mehmet))
         "#,
     );
     parser.parse();

@@ -44,8 +44,8 @@ impl machine::Machine {
         }
 
         // get arguments
-        let first_object = self.token_to_string(callback.pop().unwrap());
         let second_object = self.token_to_string(callback.pop().unwrap());
+        let first_object = self.token_to_string(callback.pop().unwrap());
 
         // return if equals
         crate::to_token!(first_object == second_object)
@@ -66,5 +66,46 @@ impl machine::Machine {
         } else {
             crate::false_token!()
         }
+    }
+
+    // run "bigger" command
+    pub fn bigger(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("bigger", 2);
+        }
+
+        // get arguments
+        let second_object = self.token_to_string(callback.pop().unwrap());
+        let first_object = self.token_to_string(callback.pop().unwrap());
+
+        crate::to_token!(first_object.len() > second_object.len())
+    }
+
+    // run "biggern" command
+    pub fn biggern(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("biggern", 2);
+        }
+
+        // get arguments
+        let second_object = self.token_to_string(callback.pop().unwrap());
+        let first_object = self.token_to_string(callback.pop().unwrap());
+
+        // parse arguments
+        let first_number = first_object.parse::<f32>();
+        let second_number = second_object.parse::<f32>();
+
+        // check if any errors
+        if first_number.is_err() || second_number.is_err() {
+            debug::send_message("biggern takes two number, please check your arguments.");
+        }
+
+        // unwrap floats
+        let first_number = first_number.unwrap();
+        let second_number = second_number.unwrap();
+
+        crate::to_token!(first_number > second_number)
     }
 }

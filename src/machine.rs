@@ -105,6 +105,8 @@ impl Machine {
                 "if" => self.r#if(command.arguments),
                 "equals" => self.equals(command.arguments),
                 "not" => self.not(command.arguments),
+                "bigger" => self.bigger(command.arguments),
+                "biggern" => self.biggern(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     let mut arguments: Vec<String> = Vec::new();

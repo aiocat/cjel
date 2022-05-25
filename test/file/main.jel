@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-for(deneme __char__ print(get(__char__)))
+for(int(100.9) __char__ print(get(__char__)))

@@ -108,6 +108,9 @@ impl Machine {
                 "bigger" => self.bigger(command.arguments),
                 // from commands/iterate.rs
                 "for" => self.r#for(command.arguments),
+                // from commands/cast.rs
+                "float" => self.float(command.arguments),
+                "int" => self.int(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     let mut arguments: Vec<String> = Vec::new();

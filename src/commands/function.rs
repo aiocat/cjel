@@ -23,15 +23,17 @@ use crate::parser;
 #[derive(Debug, Clone)]
 pub struct FunctionData {
     pub key: String,              // function key
+    pub arguments: Vec<String>,   // function arguments
     pub value: Rc<parser::Token>, // uses rc to share token without memory-cost
 }
 
 // function data functions
 impl FunctionData {
     // create new function data
-    pub fn new(key: String, value: parser::Token) -> Self {
+    pub fn new(key: String, value: parser::Token, args: Vec<String>) -> Self {
         Self {
             key,
+            arguments: args,
             value: Rc::new(value),
         }
     }
@@ -66,16 +68,36 @@ impl machine::Machine {
     // run "function" command
     pub fn function(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
-        if callback.len() != 2 {
-            debug::send_argc_message("function", 2);
+        if callback.len() != 3 {
+            debug::send_argc_message("function", 3);
         }
 
         // get arguments (reversed)
         let given_command = callback.pop().unwrap();
+        let arguments_token = callback.pop().unwrap();
         let first_arg = callback.pop().unwrap();
 
         // get function name
         let function_name = self.token_to_string(first_arg);
+
+        // get arguments
+        let arguments = if let parser::Token::Command(argument_command) = arguments_token {
+            if argument_command.name == String::new() {
+                let mut args = Vec::new();
+
+                for arg in argument_command.arguments {
+                    if let parser::Token::String(value) = arg {
+                        args.push(value);
+                    }
+                }
+
+                args
+            } else {
+                Vec::new()
+            }
+        } else {
+            Vec::new()
+        };
 
         // remove clone if exists
         let mut cloned_value = Rc::clone(&self.functions);
@@ -83,7 +105,7 @@ impl machine::Machine {
         mutable_value.retain(|var| var.key != function_name);
 
         // insert function
-        mutable_value.push(FunctionData::new(function_name, given_command));
+        mutable_value.push(FunctionData::new(function_name, given_command, arguments));
         self.functions = take(&mut cloned_value);
 
         // return nil
@@ -93,11 +115,12 @@ impl machine::Machine {
     // run "call" command
     pub fn call(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
-        if callback.len() != 1 {
-            debug::send_argc_message("call", 1);
+        if callback.is_empty() {
+            debug::send_least_argc_message("call", 1);
         }
 
         // get arguments (reversed)
+        callback.reverse();
         let first_arg = callback.pop().unwrap();
 
         // get function name
@@ -112,7 +135,32 @@ impl machine::Machine {
 
         // return variable value
         match found_function {
-            Some(data) => self.process(data.get()),
+            Some(data) => {
+                //get function arguments
+                let function_args = data.arguments.iter();
+
+                // check argument count
+                if callback.len() != function_args.len() {
+                    debug::send_message(&format!(
+                        "function \"{}\" excepted {} arguments, got {} argument.",
+                        function_name,
+                        function_args.len(),
+                        callback.len()
+                    ));
+                    return parser::Token::String(String::new());
+                }
+
+                // set variables
+                for argument in function_args {
+                    self.r#let(vec![
+                        parser::Token::String(argument.clone()),
+                        callback.pop().unwrap(),
+                    ]);
+                }
+
+                // call command
+                self.process(data.get())
+            }
             None => {
                 debug::send_message(&format!(
                     "function \"{function_name}\" doesn't exists. (yet?)"

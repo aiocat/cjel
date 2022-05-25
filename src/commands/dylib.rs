@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// this part is extreme unsafe for Rust.
 use libloading::Error;
 use libloading::{Library, Symbol};
 use std::ffi::CStr;

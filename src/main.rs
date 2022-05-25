@@ -20,10 +20,12 @@ mod parser;
 fn main() {
     let mut parser = parser::Parser::new(
         r#"
-        dylib(testing E:\Hersey\Acatp\jel\test\ffi\libtest.dll)
-        let(result native(testing call_from_c "hello from jel!"))
-        let(result2 native(testing borrow "again???"))
-        print(get(result) | get(result2))
+        function(deneme (qwe asd) do(
+            print(get(qwe))
+            print(get(asd))
+        ))
+
+        call(deneme 10 20)
         "#,
     );
     parser.parse();

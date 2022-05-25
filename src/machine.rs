@@ -95,9 +95,11 @@ impl Machine {
                 // from commands/dylib.rs
                 "dylib" => self.dylib(command.arguments),
                 "native" => self.native(command.arguments),
-                _ => {
+                unknown => {
                     // give an error
-                    debug::send_message("unknown command");
+                    debug::send_message(&format!(
+                        "command \"{unknown}\" not found, probably removed or just a misspell?"
+                    ));
                     parser::Token::String(String::new())
                 }
             }

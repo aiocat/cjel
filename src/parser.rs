@@ -20,6 +20,7 @@ use std::mem::take;
 pub enum ParserState {
     Token,
     String,
+    Comment,
 }
 
 // token enum
@@ -103,6 +104,7 @@ impl Parser<'_> {
         match self.state {
             ParserState::Token => self.collect_token(character),
             ParserState::String => self.collect_string(character),
+            ParserState::Comment => self.collect_comment(character),
         }
     }
 
@@ -147,6 +149,15 @@ impl Parser<'_> {
 
                 // change state to string collecting
                 self.state = ParserState::String
+            }
+            '#' => {
+                // move string argument (if exists)
+                if !self.temp.is_empty() {
+                    self.output.push(Token::String(take(&mut self.temp)));
+                }
+
+                // change state to comment collecting
+                self.state = ParserState::Comment
             }
             ')' => {
                 // move string argument (if exists)
@@ -226,9 +237,26 @@ impl Parser<'_> {
 
             // push character
             self.temp.push(character);
+        } else if character == '\n' {
+            // end string if new line
+            self.line += 1;
+            self.column = 0;
+
+            self.state = ParserState::Token;
+            self.output.push(Token::String(take(&mut self.temp)));
         } else {
             // push character
             self.temp.push(character);
+        }
+    }
+
+    // collect comment
+    fn collect_comment(&mut self, character: char) {
+        // check new line
+        if character == '\n' {
+            self.line += 1;
+            self.column = 0;
+            self.state = ParserState::Token;
         }
     }
 

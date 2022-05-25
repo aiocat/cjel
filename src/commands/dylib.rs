@@ -96,40 +96,10 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get library name
-        let library_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("library name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("library name must be a valid object.");
-            String::new()
-        };
+        let library_name = self.token_to_string(first_arg);
 
         // get library path
-        let library_path = if let parser::Token::String(value) = second_arg {
-            // return string
-            value
-        } else if matches!(second_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(second_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("library path must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("library path must be a valid object.");
-            String::new()
-        };
+        let library_path = self.token_to_string(second_arg);
 
         // remove clone if exists
         self.dynamic_libs.retain(|var| var.key != library_name);
@@ -154,58 +124,13 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get library name
-        let library_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("library name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("library name must be a valid object.");
-            String::new()
-        };
+        let library_name = self.token_to_string(first_arg);
 
         // get function name
-        let function_name = if let parser::Token::String(value) = second_arg {
-            // return string
-            value
-        } else if matches!(second_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(second_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("library path must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("library path must be a valid object.");
-            String::new()
-        };
+        let function_name = self.token_to_string(second_arg);
 
         // get function arg
-        let function_arg = if let parser::Token::String(value) = third_arg {
-            // return string
-            value
-        } else if matches!(third_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(third_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("library path must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("library path must be a valid object.");
-            String::new()
-        };
+        let function_arg = self.token_to_string(third_arg);
 
         // find library by key
         let library = self.dynamic_libs.iter().find(|var| var.key == library_name);

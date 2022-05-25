@@ -124,6 +124,11 @@ impl Parser<'_> {
             }
             '\r' => return,
             '\n' => {
+                // move string argument (if exists)
+                if !self.temp.is_empty() {
+                    self.output.push(Token::String(take(&mut self.temp)));
+                }
+
                 // update column and line
                 self.line += 1;
                 self.column = 0;

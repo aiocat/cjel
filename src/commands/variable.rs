@@ -41,20 +41,24 @@ impl VariableData {
     // return variable value without cloning and moving, using reference counting
     pub fn get(&mut self) -> String {
         // check reference count
-        if self.ref_count == 1 {
-            // reset variable value
-            let value = take(Rc::get_mut(&mut self.value).unwrap());
-            self.ref_count = 0;
-            value
-        } else if self.ref_count < 1 {
-            // return nil
-            String::from("nil")
-        } else {
-            // clone variable reference count
-            let mut cloned = Rc::clone(&self.value);
-            let value = Rc::make_mut(&mut cloned);
-            self.ref_count -= 1;
-            take(value)
+        match self.ref_count {
+            1 => {
+                // reset variable value
+                let value = take(Rc::get_mut(&mut self.value).unwrap());
+                self.ref_count = 0;
+                value
+            }
+            num if num < 1 => {
+                // return nil
+                String::from("nil")
+            }
+            _ => {
+                // clone variable reference count
+                let mut cloned = Rc::clone(&self.value);
+                let value = Rc::make_mut(&mut cloned);
+                self.ref_count -= 1;
+                take(value)
+            }
         }
     }
 
@@ -78,40 +82,10 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get variable name
-        let variable_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("variable name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("variable name must be a valid object.");
-            String::new()
-        };
+        let variable_name = self.token_to_string(first_arg);
 
         // get variable value
-        let variable_value = if let parser::Token::String(value) = second_arg {
-            // return string
-            value
-        } else if matches!(second_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(second_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("variable name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("variable name must be a valid object.");
-            String::new()
-        };
+        let variable_value = self.token_to_string(second_arg);
 
         // remove clone if exists
         self.variables.retain(|var| var.key != variable_name);
@@ -134,22 +108,7 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get variable name
-        let variable_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("variable name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("variable name must be a valid object.");
-            String::new()
-        };
+        let variable_name = self.token_to_string(first_arg);
 
         // dbg!(&self.variables);
         // find variable by key
@@ -181,22 +140,7 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get variable name
-        let variable_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("variable name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("variable name must be a valid object.");
-            String::new()
-        };
+        let variable_name = self.token_to_string(first_arg);
 
         // dbg!(&self.variables);
         // find variable by key

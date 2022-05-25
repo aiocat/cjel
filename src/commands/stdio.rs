@@ -23,16 +23,7 @@ impl machine::Machine {
         // iterate over given arguments
         for arg in callback {
             // check token type
-            if let parser::Token::String(value) = arg {
-                // push string
-                arguments.push(value);
-            } else if let parser::Token::Command(_) = arg {
-                // run command and push string
-                if let parser::Token::String(value) = self.process(arg) {
-                    // push string
-                    arguments.push(value);
-                }
-            }
+            arguments.push(self.token_to_string(arg));
         }
 
         // print collected objects

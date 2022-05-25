@@ -75,22 +75,7 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get function name
-        let function_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("function name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("function name must be a valid object.");
-            String::new()
-        };
+        let function_name = self.token_to_string(first_arg);
 
         // remove clone if exists
         let mut cloned_value = Rc::clone(&self.functions);
@@ -116,22 +101,7 @@ impl machine::Machine {
         let first_arg = callback.pop().unwrap();
 
         // get function name
-        let function_name = if let parser::Token::String(value) = first_arg {
-            // return string
-            value
-        } else if matches!(first_arg, parser::Token::Command(_)) {
-            // run command and push string
-            if let parser::Token::String(value) = self.process(first_arg) {
-                // push string
-                value
-            } else {
-                debug::send_message("function name must be a valid object.");
-                String::new()
-            }
-        } else {
-            debug::send_message("function name must be a valid object.");
-            String::new()
-        };
+        let function_name = self.token_to_string(first_arg);
 
         // find variable by key
         let mut cloned_value = Rc::clone(&self.functions);

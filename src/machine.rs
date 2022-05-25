@@ -57,6 +57,26 @@ impl Machine {
         }
     }
 
+    // convert a token to a string
+    pub fn token_to_string(&mut self, token: parser::Token) -> String {
+        if let parser::Token::String(value) = token {
+            // return string
+            value
+        } else if matches!(token, parser::Token::Command(_)) {
+            // run command and push string
+            if let parser::Token::String(value) = self.process(token) {
+                // push string
+                value
+            } else {
+                debug::send_message("token must be a valid object.");
+                String::new()
+            }
+        } else {
+            debug::send_message("token must be a valid object.");
+            String::new()
+        }
+    }
+
     // run a command
     pub fn process(&mut self, token: parser::Token) -> parser::Token {
         // check if its a command

@@ -84,7 +84,7 @@ impl DynamicLibraryData {
 // main part of the dynamic library support for jel
 impl machine::Machine {
     // run "dylib" command
-    pub fn dylib(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn dylib(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 2 {
             debug::send_argc_message("dylib", 2);
@@ -101,17 +101,18 @@ impl machine::Machine {
         let library_path = self.token_to_string(second_arg);
 
         // remove clone if exists
-        self.dynamic_libs.retain(|var| var.key != library_name);
+        let mut taken = self.dynamic_libs.take();
+        taken.retain(|var| var.key != library_name);
 
         // insert variable
-        self.dynamic_libs
-            .push(DynamicLibraryData::new(library_name, library_path));
+        taken.push(DynamicLibraryData::new(library_name, library_path));
+        self.dynamic_libs.set(taken);
 
         parser::Token::String(String::from("nil"))
     }
 
     // run "native" command
-    pub fn native(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn native(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 3 {
             debug::send_argc_message("native", 3);
@@ -132,9 +133,10 @@ impl machine::Machine {
         let function_arg = self.token_to_string(third_arg);
 
         // find library by key
-        let library = self.dynamic_libs.iter().find(|var| var.key == library_name);
+        let taken = self.dynamic_libs.take();
+        let library = taken.iter().find(|var| var.key == library_name);
 
-        match library {
+        let result = match library {
             Some(lib) => parser::Token::String(lib.call(function_name, function_arg)),
             None => {
                 debug::send_message(&format!(
@@ -142,6 +144,9 @@ impl machine::Machine {
                 ));
                 parser::Token::String(String::new())
             }
-        }
+        };
+
+        self.dynamic_libs.set(taken);
+        result
     }
 }

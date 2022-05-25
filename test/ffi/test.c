@@ -17,7 +17,8 @@
 #include "test.h"
 
 const char* call_from_c(const char* got_arg) {
-    puts(got_arg);
+    int sayi = strtol(got_arg, NULL, 10);
+    printf("sonuc: %d\n", sayi + 1);
     return "returned from c";
 }
 

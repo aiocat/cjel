@@ -16,6 +16,8 @@
 #define TEST_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 const char* call_from_c(const char* arg);
 const char* borrow(const char* arg);

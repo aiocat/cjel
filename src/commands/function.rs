@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::mem::take;
-use std::rc::Rc;
-
 use crate::debug;
 use crate::machine;
 use crate::parser;
@@ -22,35 +19,31 @@ use crate::parser;
 // function struct
 #[derive(Debug, Clone)]
 pub struct FunctionData {
-    pub key: String,              // function key
-    pub arguments: Vec<String>,   // function arguments
-    pub value: Rc<parser::Token>, // uses rc to share token without memory-cost
+    pub arguments: Vec<String>, // function arguments
+    pub value: parser::Token,   // uses rc to share token without memory-cost
 }
 
 // function data functions
 impl FunctionData {
     // create new function data
-    pub fn new(key: String, value: parser::Token, args: Vec<String>) -> Self {
+    pub fn new(value: parser::Token, args: Vec<String>) -> Self {
         Self {
-            key,
+            value,
             arguments: args,
-            value: Rc::new(value),
         }
     }
 
     // return function value
     pub fn get(&mut self) -> parser::Token {
         // clone variable reference count
-        let mut cloned = Rc::clone(&self.value);
-        let value = Rc::make_mut(&mut cloned);
-        take(value)
+        self.value.clone()
     }
 }
 
 // main part of the functions (with do command)
 impl machine::Machine {
     // run "do" command
-    pub fn r#do(&mut self, callback: Vec<parser::Token>) -> parser::Token {
+    pub fn r#do(&self, callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.is_empty() {
             debug::send_least_argc_message("do", 1);
@@ -66,7 +59,7 @@ impl machine::Machine {
     }
 
     // run "function" command
-    pub fn function(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn function(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 3 {
             debug::send_argc_message("function", 3);
@@ -99,21 +92,17 @@ impl machine::Machine {
             Vec::new()
         };
 
-        // remove clone if exists
-        let mut cloned_value = Rc::clone(&self.functions);
-        let mutable_value = Rc::make_mut(&mut cloned_value);
-        mutable_value.retain(|var| var.key != function_name);
-
         // insert function
-        mutable_value.push(FunctionData::new(function_name, given_command, arguments));
-        self.functions = take(&mut cloned_value);
+        let mut taken = self.functions.take();
+        taken.insert(function_name, FunctionData::new(given_command, arguments));
+        self.functions.set(taken);
 
         // return nil
         parser::Token::String(String::from("nil"))
     }
 
     // run "call" command
-    pub fn call(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn call(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.is_empty() {
             debug::send_least_argc_message("call", 1);
@@ -126,15 +115,9 @@ impl machine::Machine {
         // get function name
         let function_name = self.token_to_string(first_arg);
 
-        // find variable by key
-        let mut cloned_value = Rc::clone(&self.functions);
-        let mutable_value = Rc::make_mut(&mut cloned_value);
-        let found_function = mutable_value
-            .iter_mut()
-            .find(|var| var.key == function_name);
-
         // return variable value
-        match found_function {
+        let mut taken = self.functions.take();
+        let result = match taken.get_mut(&function_name) {
             Some(data) => {
                 //get function arguments
                 let function_args = data.arguments.iter();
@@ -158,8 +141,8 @@ impl machine::Machine {
                     ]);
                 }
 
-                // call command
-                self.process(data.get())
+                // return command
+                data.get()
             }
             None => {
                 debug::send_message(&format!(
@@ -167,6 +150,11 @@ impl machine::Machine {
                 ));
                 parser::Token::String(String::new())
             }
-        }
+        };
+
+        self.functions.set(taken);
+
+        // call command
+        self.process(result)
     }
 }

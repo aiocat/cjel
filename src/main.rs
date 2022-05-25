@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 mod commands;
 mod debug;
 mod machine;
@@ -20,12 +19,8 @@ mod parser;
 fn main() {
     let mut parser = parser::Parser::new(
         r#"
-        function(deneme (qwe asd) do(
-            print(get(qwe))
-            print(get(asd))
-        ))
-
-        call(deneme 10 20)
+        dylib(testing E:\Hersey\Acatp\jel\test\ffi\libtest.dll)
+        print(native(testing call_from_c "6"))
         "#,
     );
     parser.parse();

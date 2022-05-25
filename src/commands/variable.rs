@@ -13,7 +13,6 @@
 // limitations under the License.
 
 use std::mem::take;
-use std::rc::Rc;
 
 use crate::debug;
 use crate::machine;
@@ -22,56 +21,26 @@ use crate::parser;
 // variable struct
 #[derive(Debug)]
 pub struct VariableData {
-    pub key: String,       // variable key
-    pub value: Rc<String>, // uses rc to share string without memory-cost
-    pub ref_count: usize,  // for variable reference counting, will removed if zero
+    pub value: String, // variable value
 }
 
 // variable functions
 impl VariableData {
     // create new variable data
-    pub fn new(key: String, value: String) -> Self {
-        Self {
-            key,
-            value: Rc::new(value),
-            ref_count: 1,
-        }
+    pub fn new(value: String) -> Self {
+        Self { value }
     }
 
-    // return variable value without cloning and moving, using reference counting
-    pub fn get(&mut self) -> String {
-        // check reference count
-        match self.ref_count {
-            1 => {
-                // reset variable value
-                let value = take(Rc::get_mut(&mut self.value).unwrap());
-                self.ref_count = 0;
-                value
-            }
-            num if num < 1 => {
-                // return nil
-                String::from("nil")
-            }
-            _ => {
-                // clone variable reference count
-                let mut cloned = Rc::clone(&self.value);
-                let value = Rc::make_mut(&mut cloned);
-                self.ref_count -= 1;
-                take(value)
-            }
-        }
-    }
-
-    // upgrade variable reference count, so variable can live longer
-    pub fn upgrade(&mut self) {
-        self.ref_count += 1;
+    // take variable
+    pub fn take(&mut self) -> String {
+        take(&mut self.value)
     }
 }
 
 // main part of the command(s)
 impl machine::Machine {
     // run "let" command
-    pub fn r#let(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn r#let(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 2 {
             debug::send_argc_message("let", 2);
@@ -87,18 +56,16 @@ impl machine::Machine {
         // get variable value
         let variable_value = self.token_to_string(second_arg);
 
-        // remove clone if exists
-        self.variables.retain(|var| var.key != variable_name);
-
         // insert variable
-        self.variables
-            .push(VariableData::new(variable_name, variable_value));
+        let mut taken = self.variables.take();
+        taken.insert(variable_name, VariableData::new(variable_value));
+        self.variables.set(taken);
 
         parser::Token::String(String::from("nil"))
     }
 
     // run "get" command
-    pub fn get(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    pub fn get(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 1 {
             debug::send_argc_message("get", 1);
@@ -112,28 +79,29 @@ impl machine::Machine {
 
         // dbg!(&self.variables);
         // find variable by key
-        let variable = self
-            .variables
-            .iter_mut()
-            .find(|var| var.key == variable_name);
-
-        // return variable value
-        match variable {
-            Some(data) => parser::Token::String(data.get()),
+        let mut taken = self.variables.take();
+        let will_return = match taken.get_mut(&variable_name) {
+            Some(data) => data.take(),
             None => {
                 debug::send_message(&format!(
                     "variable \"{variable_name}\" doesn't exists. (yet?)"
                 ));
-                parser::Token::String(String::new())
+                String::new()
             }
-        }
+        };
+
+        // remove variable
+        taken.remove(&variable_name).unwrap();
+
+        self.variables.set(taken);
+        parser::Token::String(will_return)
     }
 
-    // run "upgrade" command
-    pub fn upgrade(&mut self, mut callback: Vec<parser::Token>) -> parser::Token {
+    // run "clone" command
+    pub fn clone(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 1 {
-            debug::send_argc_message("upgrade", 1);
+            debug::send_argc_message("get", 1);
         }
 
         // get argument
@@ -144,23 +112,18 @@ impl machine::Machine {
 
         // dbg!(&self.variables);
         // find variable by key
-        let variable = self
-            .variables
-            .iter_mut()
-            .find(|var| var.key == variable_name);
-
-        // upgrade variable
-        match variable {
-            Some(data) => {
-                data.upgrade();
-                parser::Token::String(variable_name)
-            }
+        let mut taken = self.variables.take();
+        let will_return = match taken.get_mut(&variable_name) {
+            Some(data) => data.value.clone(),
             None => {
                 debug::send_message(&format!(
                     "variable \"{variable_name}\" doesn't exists. (yet?)"
                 ));
-                parser::Token::String(String::new())
+                String::new()
             }
-        }
+        };
+
+        self.variables.set(taken);
+        parser::Token::String(will_return)
     }
 }

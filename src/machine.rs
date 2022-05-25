@@ -15,15 +15,16 @@
 use crate::commands;
 use crate::debug;
 use crate::parser;
+use std::cell::Cell;
+use std::collections::HashMap;
 use std::mem::take;
-use std::rc::Rc;
 
 // machine struct
 pub struct Machine {
     pub instructions: Vec<parser::Token>, // instructions for machine
-    pub variables: Vec<commands::variable::VariableData>, // variables are stored here
-    pub functions: Rc<Vec<commands::function::FunctionData>>, // functions are stored here
-    pub dynamic_libs: Vec<commands::dylib::DynamicLibraryData>, // dynamic libraries are stored here
+    pub variables: Cell<HashMap<String, commands::variable::VariableData>>, // variables are stored here
+    pub functions: Cell<HashMap<String, commands::function::FunctionData>>, // functions are stored here
+    pub dynamic_libs: Cell<Vec<commands::dylib::DynamicLibraryData>>, // dynamic libraries are stored here
 }
 
 // implement default for machine
@@ -32,9 +33,9 @@ impl Default for Machine {
     fn default() -> Self {
         Self {
             instructions: Vec::new(),
-            variables: Vec::new(),
-            functions: Rc::new(Vec::new()),
-            dynamic_libs: Vec::new(),
+            variables: Cell::new(HashMap::new()),
+            functions: Cell::new(HashMap::new()),
+            dynamic_libs: Cell::new(Vec::new()),
         }
     }
 }
@@ -58,7 +59,7 @@ impl Machine {
     }
 
     // convert a token to a string
-    pub fn token_to_string(&mut self, token: parser::Token) -> String {
+    pub fn token_to_string(&self, token: parser::Token) -> String {
         if let parser::Token::String(value) = token {
             // return string
             value
@@ -78,7 +79,7 @@ impl Machine {
     }
 
     // run a command
-    pub fn process(&mut self, token: parser::Token) -> parser::Token {
+    pub fn process(&self, token: parser::Token) -> parser::Token {
         // check if its a command
         if let parser::Token::Command(command) = token {
             match command.name.as_str() {
@@ -87,7 +88,7 @@ impl Machine {
                 // from commands/variable.rs
                 "let" => self.r#let(command.arguments),
                 "get" => self.get(command.arguments),
-                "upgrade" => self.upgrade(command.arguments),
+                "clone" => self.clone(command.arguments),
                 // from commands/function.rs
                 "do" => self.r#do(command.arguments),
                 "function" => self.function(command.arguments),

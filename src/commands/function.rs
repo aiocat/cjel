@@ -20,6 +20,7 @@ use crate::parser;
 #[derive(Debug, Clone)]
 pub struct FunctionData {
     pub arguments: Vec<String>, // function arguments
+    pub public: bool,           // if it is, this data will visible to all .jel files
     pub value: parser::Token,   // uses rc to share token without memory-cost
 }
 
@@ -29,6 +30,7 @@ impl FunctionData {
     pub fn new(value: parser::Token, args: Vec<String>) -> Self {
         Self {
             value,
+            public: false,
             arguments: args,
         }
     }
@@ -95,6 +97,36 @@ impl machine::Machine {
         // insert function
         let mut taken = self.functions.take();
         taken.insert(function_name, FunctionData::new(given_command, arguments));
+        self.functions.set(taken);
+
+        // return nil
+        parser::Token::String(String::from("nil"))
+    }
+
+    // run "pubf" command
+    pub fn pubf(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // give error message if argument count is not matching
+        if callback.len() != 1 {
+            debug::send_argc_message("pubf", 1);
+        }
+
+        // get argument (reversed)
+        let first_arg = callback.pop().unwrap();
+
+        // get function name
+        let function_name = self.token_to_string(first_arg);
+
+        // toggle function visibility
+        let mut taken = self.functions.take();
+        match taken.get_mut(&function_name) {
+            Some(data) => data.public = !data.public,
+            None => {
+                debug::send_message(&format!(
+                    "function \"{function_name}\" doesn't exists. (yet?)"
+                ));
+            }
+        };
+
         self.functions.set(taken);
 
         // return nil

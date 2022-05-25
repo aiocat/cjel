@@ -28,6 +28,7 @@ use crate::parser;
 pub struct DynamicLibraryData {
     pub key: String,        // dynamic library key
     pub value: Rc<Library>, // dynamic library data
+    pub public: bool,       // if it is, this data will visible to all .jel files
 }
 
 // dynamic library data functions
@@ -43,6 +44,7 @@ impl DynamicLibraryData {
         Self {
             key,
             value: Rc::new(library.unwrap()),
+            public: false,
         }
     }
 
@@ -108,6 +110,36 @@ impl machine::Machine {
         taken.push(DynamicLibraryData::new(library_name, library_path));
         self.dynamic_libs.set(taken);
 
+        parser::Token::String(String::from("nil"))
+    }
+
+    // run "pubd" command
+    pub fn pubd(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // give error message if argument count is not matching
+        if callback.len() != 1 {
+            debug::send_argc_message("pubd", 1);
+        }
+
+        // get arguments (reversed)
+        let first_arg = callback.pop().unwrap();
+
+        // get library name
+        let library_name = self.token_to_string(first_arg);
+
+        // find library by key
+        let mut taken = self.dynamic_libs.take();
+        let library = taken.iter_mut().find(|var| var.key == library_name);
+
+        match library {
+            Some(lib) => lib.public = !lib.public,
+            None => debug::send_message(&format!(
+                "dynamic library \"{library_name}\" doesn't exists. (yet?)"
+            )),
+        }
+
+        self.dynamic_libs.set(taken);
+
+        // return nil
         parser::Token::String(String::from("nil"))
     }
 

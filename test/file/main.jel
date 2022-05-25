@@ -1,2 +1,2 @@
 import(test.jel)
-print(get(deneme))
+print(get("test.jel/deneme"))

@@ -30,23 +30,31 @@ impl machine::Machine {
         // append variables
         let mut variables = self.variables.take();
         for (key, value) in machine.variables.take() {
-            variables.insert(key, value);
+            if value.public {
+                variables.insert(format!("{first_arg}/{key}"), value);
+            }
         }
         self.variables.set(variables);
 
         // append functions
         let mut functions = self.functions.take();
         for (key, value) in machine.functions.take() {
-            functions.insert(key, value);
+            if value.public {
+                functions.insert(format!("{first_arg}/{key}"), value);
+            }
         }
         self.functions.set(functions);
 
         // append dynamic libraries
         let mut dynamic_libs = self.dynamic_libs.take();
-        for dynamic_lib in machine.dynamic_libs.take() {
-            // remove old one, if exists
-            dynamic_libs.retain(|var| var.key != dynamic_lib.key);
-            dynamic_libs.push(dynamic_lib);
+        for mut dynamic_lib in machine.dynamic_libs.take() {
+            if dynamic_lib.public {
+                // remove old one, if exists
+                dynamic_libs.retain(|var| var.key != dynamic_lib.key);
+
+                dynamic_lib.key = format!("{}/{}", first_arg, dynamic_lib.key);
+                dynamic_libs.push(dynamic_lib);
+            }
         }
         self.dynamic_libs.set(dynamic_libs);
 

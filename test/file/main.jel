@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if(
-    biggern(10 20)
-    print(true)
-    print(false)
-)
+for(deneme __char__ print(get(__char__)))

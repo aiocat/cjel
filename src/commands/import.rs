@@ -15,7 +15,9 @@
 use crate::debug;
 use crate::machine;
 use crate::parser;
+use std::env;
 use std::fs::read_to_string;
+use std::path::PathBuf;
 
 impl machine::Machine {
     // run "import" command
@@ -63,6 +65,8 @@ impl machine::Machine {
 
     // import external file and return results
     fn load_external_file(&self, path: &str) -> machine::Machine {
+        let old_working_dir = env::current_dir().unwrap();
+
         // read file
         let file_data = read_to_string(path).unwrap();
 
@@ -70,10 +74,18 @@ impl machine::Machine {
         let mut parser = parser::Parser::new(&file_data);
         parser.parse();
 
+        // set working dir
+        let mut new_path = PathBuf::from(path);
+        new_path.pop();
+
+        let _ = env::set_current_dir(new_path);
+
         // run interpreter
         let mut machine = machine::Machine::new(parser.output);
         machine.process_whole();
 
+        // re-edit directory
+        let _ = env::set_current_dir(old_working_dir);
         machine
     }
 }

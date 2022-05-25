@@ -52,7 +52,7 @@ impl machine::Machine {
         }
 
         // iterate over commands an run them
-        let mut last_output: parser::Token = parser::Token::String(String::from("nil"));
+        let mut last_output: parser::Token = crate::nil_token!();
         for arg in callback {
             last_output = self.process(arg);
         }

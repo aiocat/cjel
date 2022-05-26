@@ -12,18 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import(../../std/clet/wrapper.jel)
+# call dynamic library
+dylib(:clet .\libclet.dll)
 
-# initialize
-call(:clet_init)
+# initialize clet
+function(:clet_init () do(
+    native(:clet clet_init "")
+))
 
-# make variable
-call(:clet_set deneme "naber dostum!")
-call(:clet_set a-number 20)
+# set value 
+function(:clet_set (__clet_key__ __clet_value__) do(
+    native(:clet clet_set (" " get(__clet_key__) get(__clet_value__)))
+))
 
-# get variable
-print(call(:clet_get deneme))
-print(bigger(call(:clet_get a-number) 10))
+# get value 
+function(:clet_get (__clet_key__) do(
+    native(:clet clet_get get(__clet_key__))
+))
 
-# free
-call(:clet_free)
+# free clet 
+function(:clet_free () do(
+    native(:clet clet_free "")
+))
+
+# make them public
+pubf(:clet_init)
+pubf(:clet_set)
+pubf(:clet_get)
+pubf(:clet_free)
+pubd(:clet)

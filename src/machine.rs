@@ -81,7 +81,7 @@ impl Machine {
     // run a command
     pub fn process(&self, token: parser::Token) -> parser::Token {
         // check if its a command
-        if let parser::Token::Command(command) = token {
+        if let parser::Token::Command(mut command) = token {
             match command.name.as_str() {
                 // from commands/stdio.rs
                 "print" => self.print(command.arguments),
@@ -115,6 +115,14 @@ impl Machine {
                 "bool" => self.bool(command.arguments),
                 // empty command is for concat objects
                 "" => {
+                    // check arguments
+                    if command.arguments.len() < 2 {
+                        debug::send_least_argc_message("concat", 2);
+                    }
+
+                    command.arguments.reverse();
+                    let connector = self.token_to_string(command.arguments.pop().unwrap());
+                    command.arguments.reverse();
                     let mut arguments: Vec<String> = Vec::new();
 
                     // iterate over given arguments
@@ -133,7 +141,7 @@ impl Machine {
                     }
 
                     // return object
-                    let calculated_string = arguments.join(" ");
+                    let calculated_string = arguments.join(&connector);
                     parser::Token::String(calculated_string)
                 }
                 unknown => {

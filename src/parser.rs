@@ -237,6 +237,20 @@ impl Parser<'_> {
 
             // push character
             self.temp.push(character);
+        } else if character == '0' {
+            // check if is a new line
+            if !self.temp.is_empty() {
+                let last_character = self.temp.chars().last().unwrap();
+
+                if last_character == '\\' {
+                    self.temp.pop();
+                    self.temp.push('\0');
+                    return;
+                }
+            }
+
+            // push character
+            self.temp.push(character);
         } else if character == '\n' {
             // end string if new line
             self.line += 1;

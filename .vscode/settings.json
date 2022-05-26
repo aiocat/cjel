@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.jel": "julia",
+        "string.h": "c"
+    }
+}

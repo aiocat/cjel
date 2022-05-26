@@ -34,10 +34,12 @@ impl machine::Machine {
             // iterate over number
             let mut last_output: parser::Token = crate::nil_token!();
             for n in 0..number {
-                self.r#let(vec![
-                    parser::Token::String(variable_name.clone()),
-                    crate::to_token!(n),
-                ]);
+                if !crate::is_false!(variable_name) {
+                    self.r#let(vec![
+                        parser::Token::String(variable_name.clone()),
+                        crate::to_token!(n),
+                    ]);
+                }
 
                 last_output = self.process(do_every_iter.clone());
             }

@@ -34,13 +34,13 @@ impl machine::Machine {
             "nil" => crate::to_token!(0.0),
             _ => {
                 // try cast to float
-                let try_float = will_converted.parse::<f32>();
-                match try_float {
-                    Ok(value) => crate::to_token!(value as f32),
+                let try_int = will_converted.parse::<i32>();
+                match try_int {
+                    Ok(value) => crate::to_token!(format!("{value}.0")),
                     Err(_) => {
-                        // try cast to int
-                        let try_int = will_converted.parse::<i32>();
-                        match try_int {
+                        // try cast to float
+                        let try_float = will_converted.parse::<f32>();
+                        match try_float {
                             Ok(value) => crate::to_token!(value),
                             Err(_) => crate::nil_token!(),
                         }

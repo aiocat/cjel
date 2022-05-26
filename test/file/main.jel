@@ -12,5 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# for(float(3) __char__ print(get(__char__)))
-print(float(3.0))
+for(float(float(3)) __char__ print(get(__char__)))

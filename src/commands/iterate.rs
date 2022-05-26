@@ -21,7 +21,7 @@ impl machine::Machine {
     pub fn r#for(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // check argument count
         if callback.len() != 3 {
-            debug::send_argc_message("iter", 3);
+            debug::send_argc_message("for", 3);
         }
 
         let do_every_iter = callback.pop().unwrap();
@@ -57,5 +57,29 @@ impl machine::Machine {
 
             last_output
         }
+    }
+
+    // run "while" command
+    pub fn r#while(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("while", 2);
+        }
+
+        // get arguments
+        let do_every_iter = callback.pop().unwrap();
+        let checking = callback.pop().unwrap();
+
+        // start loop
+        let mut last_output: parser::Token = crate::nil_token!();
+        loop {
+            if !crate::is_false!(self.token_to_string(checking.clone())) {
+                last_output = self.process(do_every_iter.clone());
+            } else {
+                break;
+            }
+        }
+
+        last_output
     }
 }

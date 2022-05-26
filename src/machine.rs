@@ -108,6 +108,7 @@ impl Machine {
                 "bigger" => self.bigger(command.arguments),
                 // from commands/iterate.rs
                 "for" => self.r#for(command.arguments),
+                "while" => self.r#while(command.arguments),
                 // from commands/cast.rs
                 "float" => self.float(command.arguments),
                 "int" => self.int(command.arguments),

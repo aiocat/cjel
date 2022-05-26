@@ -12,4 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-for(float(float(3)) __char__ print(get(__char__)))
+let(thing true)
+let(num a)
+
+while(clone(thing) do(
+    let(num (get(num) a))
+    print(clone(num))
+    if(bigger(clone(num) aaaaaa) do(
+        let(thing false)
+    ) nil)
+))

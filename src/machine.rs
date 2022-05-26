@@ -111,6 +111,7 @@ impl Machine {
                 // from commands/cast.rs
                 "float" => self.float(command.arguments),
                 "int" => self.int(command.arguments),
+                "bool" => self.bool(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     let mut arguments: Vec<String> = Vec::new();

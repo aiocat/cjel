@@ -18,5 +18,6 @@ pub mod dylib;
 pub mod function;
 pub mod import;
 pub mod iterate;
+pub mod math;
 pub mod stdio;
 pub mod variable;

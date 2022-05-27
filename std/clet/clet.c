@@ -26,8 +26,8 @@ const char *clet_init(const char *_)
 
 const char *clet_set(const char *input)
 {
-    char *key = malloc(0);
-    char *value = malloc(0);
+    char *key = malloc(1);
+    char *value = malloc(1);
     strcpy(key, "");
     strcpy(value, "");
 

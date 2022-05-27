@@ -1,2 +1,2 @@
-gcc -c -Wall -Werror -fpic clet.c
-gcc -shared -o libclet.dll clet.o
+clang -shared -std=c99 -undefined dynamic_lookup -o clet.dll clet.c
+del clet.dll

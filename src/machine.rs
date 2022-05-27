@@ -150,12 +150,9 @@ impl Machine {
                     let calculated_string = arguments.join(&connector);
                     parser::Token::String(calculated_string)
                 }
-                unknown => {
-                    // give an error
-                    debug::send_message(&format!(
-                        "command \"{unknown}\" not found, probably removed or just a misspell?"
-                    ));
-                    parser::Token::String(String::new())
+                _ => {
+                    command.arguments.insert(0, crate::to_token!(command.name));
+                    self.call(command.arguments)
                 }
             }
         } else {

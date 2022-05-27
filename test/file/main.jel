@@ -15,18 +15,18 @@
 import(../../std/clet/wrapper.jel)
 
 # initialize
-call(:clet_init)
+:clet_init()
 
 # make variable
-call(:clet_set qwe 10)
-call(:clet_set asd 2.5)
+:clet_set(qwe 10)
+:clet_set(asd 2.5)
 
 # get variable
-print(+(call(:clet_get "qwe") call(:clet_get "asd")))
-print(-(call(:clet_get "qwe") call(:clet_get "asd")))
-print(*(call(:clet_get "qwe") call(:clet_get "asd")))
-print(/(call(:clet_get "qwe") call(:clet_get "asd")))
-print(%(call(:clet_get "qwe") call(:clet_get "asd")))
+print(+(:clet_get("qwe") :clet_get("asd")))
+print(-(:clet_get("qwe") :clet_get("asd")))
+print(*(:clet_get("qwe") :clet_get("asd")))
+print(/(:clet_get("qwe") :clet_get("asd")))
+print(%(:clet_get("qwe") :clet_get("asd")))
 
 # free
-call(:clet_free)
+:clet_free()

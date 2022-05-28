@@ -85,6 +85,7 @@ impl Machine {
             match command.name.as_str() {
                 // from commands/stdio.rs
                 "print" => self.print(command.arguments),
+                "input" => self.input(command.arguments),
                 // from commands/variable.rs
                 "let" => self.r#let(command.arguments),
                 "get" => self.get(command.arguments),

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::io::{stdin, stdout, Write};
 use crate::machine;
 use crate::parser;
+use crate::debug;
 
 impl machine::Machine {
     // run "print" command
@@ -40,5 +42,32 @@ impl machine::Machine {
         println!("{calculated_string}");
 
         parser::Token::String(calculated_string)
+    }
+
+    // run "input" command
+    pub fn input(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        if callback.len() != 1 {
+            debug::send_argc_message("input", 1);
+        }
+
+        // print message
+        print!("{}", self.token_to_string(callback.pop().unwrap()));
+
+        // get input
+        let mut input = String::new();
+        let _ = stdout().flush();
+        stdin()
+            .read_line(&mut input)
+            .expect("stdio exception in structware.");
+
+        if let Some('\n') = input.chars().next_back() {
+            input.pop();
+        }
+
+        if let Some('\r') = input.chars().next_back() {
+            input.pop();
+        }
+
+        crate::to_token!(input)
     }
 }

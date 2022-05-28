@@ -18,14 +18,7 @@ import(../../std/clet/wrapper.jel)
 :clet.init()
 
 # make variable
-:clet.set(tr "çiş")
-:clet.set(trqweasd "osuruktan")
-
-# get variable
-print(:clet.get(tr))
-print(:clet.get(trqweasd))
-print(:clet.get(tr))
-print(:clet.get(tr))
-
+:clet.set(alinan input("isim: "))
+print(:clet.get(alinan))
 # free
 :clet.free()

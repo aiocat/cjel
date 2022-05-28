@@ -27,7 +27,7 @@ print(("" ("" ("" ("" Hello)))) ("" ("" ("" ("" World!))))) # also valid
 
 Functions:
 ```julia
-function(is_bigger (first second) bigger(first second))
+function(is_bigger (first second) bigger(get(first) get(second)))
 print(is_bigger(20 5)) # true
 ```
 

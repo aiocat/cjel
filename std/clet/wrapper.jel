@@ -16,28 +16,28 @@
 dylib(:clet .\libclet.dll)
 
 # initialize clet
-function(:clet_init () do(
+function(:clet.init () do(
     native(:clet clet_init "")
 ))
 
 # set value 
-function(:clet_set (__clet_key__ __clet_value__) do(
+function(:clet.set (__clet_key__ __clet_value__) do(
     native(:clet clet_set (" " get(__clet_key__) get(__clet_value__)))
 ))
 
 # get value 
-function(:clet_get (__clet_key__) do(
+function(:clet.get (__clet_key__) do(
     native(:clet clet_get get(__clet_key__))
 ))
 
 # free clet 
-function(:clet_free () do(
+function(:clet.free () do(
     native(:clet clet_free "")
 ))
 
 # make them public
-pubf(:clet_init)
-pubf(:clet_set)
-pubf(:clet_get)
-pubf(:clet_free)
+pubf(:clet.init)
+pubf(:clet.set)
+pubf(:clet.get)
+pubf(:clet.free)
 pubd(:clet)

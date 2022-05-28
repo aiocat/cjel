@@ -80,8 +80,8 @@ impl machine::Machine {
         let first_object = self.token_to_string(callback.pop().unwrap());
 
         // parse arguments
-        let first_number = first_object.parse::<f32>();
-        let second_number = second_object.parse::<f32>();
+        let first_number = first_object.parse::<f64>();
+        let second_number = second_object.parse::<f64>();
 
         // check if any errors
         if first_number.is_err() || second_number.is_err() {

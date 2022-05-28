@@ -34,12 +34,12 @@ impl machine::Machine {
             "nil" => crate::to_token!(0.0),
             _ => {
                 // try cast to float
-                let try_int = will_converted.parse::<i32>();
+                let try_int = will_converted.parse::<isize>();
                 match try_int {
                     Ok(value) => crate::to_token!(format!("{value}.0")),
                     Err(_) => {
                         // try cast to float
-                        let try_float = will_converted.parse::<f32>();
+                        let try_float = will_converted.parse::<f64>();
                         match try_float {
                             Ok(value) => crate::to_token!(value),
                             Err(_) => crate::nil_token!(),
@@ -67,12 +67,12 @@ impl machine::Machine {
             "nil" => crate::to_token!(0),
             _ => {
                 // try cast to float
-                let try_float = will_converted.parse::<f32>();
+                let try_float = will_converted.parse::<f64>();
                 match try_float {
-                    Ok(value) => crate::to_token!(value as i32),
+                    Ok(value) => crate::to_token!(value as isize),
                     Err(_) => {
                         // try cast to int
-                        let try_int = will_converted.parse::<i32>();
+                        let try_int = will_converted.parse::<isize>();
                         match try_int {
                             Ok(value) => crate::to_token!(value),
                             Err(_) => crate::nil_token!(),
@@ -100,12 +100,12 @@ impl machine::Machine {
             "nil" => crate::to_token!(false),
             _ => {
                 // try cast to float
-                let try_float = will_converted.parse::<f32>();
+                let try_float = will_converted.parse::<f64>();
                 match try_float {
                     Ok(value) => crate::to_token!(value != 0.0),
                     Err(_) => {
                         // try cast to int
-                        let try_int = will_converted.parse::<i32>();
+                        let try_int = will_converted.parse::<i64>();
                         match try_int {
                             Ok(value) => crate::to_token!(value != 0),
                             Err(_) => crate::nil_token!(),

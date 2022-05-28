@@ -29,7 +29,7 @@ impl machine::Machine {
         let will_iterated = self.token_to_string(callback.pop().unwrap());
 
         // check if can be a int
-        let iter_num = will_iterated.parse::<i32>();
+        let iter_num = will_iterated.parse::<isize>();
         if let Ok(number) = iter_num {
             // iterate over number
             let mut last_output: parser::Token = crate::nil_token!();

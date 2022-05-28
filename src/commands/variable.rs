@@ -134,7 +134,7 @@ impl machine::Machine {
     pub fn clone(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
         if callback.len() != 1 {
-            debug::send_argc_message("get", 1);
+            debug::send_argc_message("clone", 1);
         }
 
         // get argument
@@ -158,6 +158,36 @@ impl machine::Machine {
 
         // return variable
         self.variables.set(taken);
+        parser::Token::String(will_return)
+    }
+
+    // run "drop" command
+    pub fn drop(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // give error message if argument count is not matching
+        if callback.len() != 1 {
+            debug::send_argc_message("drop", 1);
+        }
+
+        // get argument
+        let first_arg = callback.pop().unwrap();
+
+        // get variable name
+        let variable_name = self.token_to_string(first_arg);
+
+        // dbg!(&self.variables);
+        // find variable by key
+        let mut taken = self.variables.take();
+        let will_return = match taken.remove(&variable_name) {
+            Some(data) => data.value,
+            None => {
+                debug::send_message(&format!(
+                    "variable \"{variable_name}\" doesn't exists. (yet?)"
+                ));
+                String::new()
+            }
+        };
+
+        // return removed data
         parser::Token::String(will_return)
     }
 }

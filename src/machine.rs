@@ -90,6 +90,7 @@ impl Machine {
                 "let" => self.r#let(command.arguments),
                 "get" => self.get(command.arguments),
                 "clone" => self.clone(command.arguments),
+                "drop" => self.drop(command.arguments),
                 "pubv" => self.pubv(command.arguments),
                 // from commands/function.rs
                 "do" => self.r#do(command.arguments),

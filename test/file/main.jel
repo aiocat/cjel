@@ -22,3 +22,7 @@ import(../../std/clet/wrapper.jel)
 print(:clet.get(alinan))
 # free
 :clet.free()
+
+let(thing 10)
+# drop(thing)
+print(get(thing))

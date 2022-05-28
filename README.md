@@ -50,8 +50,8 @@ let(thing 10)
 print(get(thing)) # prints 10
 print(get(thing)) # error, "thing" is removed.
 
-# in jel, variables are deleted after used. to prevent that, you can clone with clone(variable_name)
-# or you can use clet library in /std folder to get faster but unsafe vay to handle variables.
+# in Jel, variables are deleted after being used. for preventing that, you can clone with clone(variable_name)
+# or you can use clet library in /std folder to get faster but unsafe way to handle variables.
 ```
 
 ## License

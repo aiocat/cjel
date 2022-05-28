@@ -107,6 +107,7 @@ impl Machine {
                 "equals" => self.equals(command.arguments),
                 "not" => self.not(command.arguments),
                 "bigger" => self.bigger(command.arguments),
+                "smaller" => self.smaller(command.arguments),
                 // from commands/iterate.rs
                 "for" => self.r#for(command.arguments),
                 "while" => self.r#while(command.arguments),

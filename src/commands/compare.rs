@@ -95,4 +95,32 @@ impl machine::Machine {
             crate::to_token!(first_number > second_number)
         }
     }
+
+    // run "smaller" command
+    pub fn smaller(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("smaller", 2);
+        }
+
+        // get arguments
+        let second_object = self.token_to_string(callback.pop().unwrap());
+        let first_object = self.token_to_string(callback.pop().unwrap());
+
+        // parse arguments
+        let first_number = first_object.parse::<f64>();
+        let second_number = second_object.parse::<f64>();
+
+        // check if any errors
+        if first_number.is_err() || second_number.is_err() {
+            // compare as object
+            crate::to_token!(first_object.len() < second_object.len())
+        } else {
+            // compare as float
+            let first_number = first_number.unwrap();
+            let second_number = second_number.unwrap();
+
+            crate::to_token!(first_number < second_number)
+        }
+    }
 }

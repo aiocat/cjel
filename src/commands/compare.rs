@@ -123,4 +123,22 @@ impl machine::Machine {
             crate::to_token!(first_number < second_number)
         }
     }
+
+    // run "assert" command
+    pub fn assert(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("assert", 2);
+        }
+
+        // get arguments
+        let second_object = self.token_to_string(callback.pop().unwrap());
+        let first_object = self.token_to_string(callback.pop().unwrap());
+
+        if first_object != second_object {
+            debug::send_message("command assert is failed.");
+        }
+
+        crate::nil_token!()
+    }
 }

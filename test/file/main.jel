@@ -14,8 +14,9 @@
 
 # import(../../std/clet/wrapper.jel)
 
-print(type(10))
-print(type(10.3))
-print(type(true))
-print(type(nil))
-print(type(qwe))
+assert(type(10) int)
+assert(type(10.3) float)
+assert(type(true) bool)
+assert(type(nil) nil)
+assert(type(qwe) string)
+print("Success!")

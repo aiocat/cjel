@@ -18,7 +18,6 @@
 #define BYTE_BUFFER 1024
 #define NEXT_BUFFER sizeof(char) * 1024
 
-
 map_str_t variables;
 
 const char *clet_init(const char *_)
@@ -31,12 +30,28 @@ const char *clet_set(const char *input)
 {
     char *key = malloc(BYTE_BUFFER + 1);
     char *value = malloc(BYTE_BUFFER + 1);
+
+    if (key == NULL && value == NULL)
+    {
+        return "nil";
+    }
+    else if (value == NULL)
+    {
+        free(key);
+        return "nil";
+    }
+    else if (key == NULL)
+    {
+        free(value);
+        return "nil";
+    }
+
     *key = 0;
     *value = 0;
 
     size_t index = 0;
     size_t value_index = 0;
-    unsigned int status = 0;
+    uint8_t status = 0;
     while (input[index] != '\0')
     {
         if (status == 0)
@@ -49,14 +64,27 @@ const char *clet_set(const char *input)
             }
 
             if (index != 0 && index % BYTE_BUFFER == 0)
+            {
                 key = realloc(key, strlen(key) + NEXT_BUFFER);
+                if (key == NULL)
+                {
+                    free(value);
+                    return "nil";
+                }
+            }
 
             strncat(key, &input[index], 1);
         }
         else
         {
-            if (value_index != 0 && value_index % BYTE_BUFFER == 0) {
+            if (value_index != 0 && value_index % BYTE_BUFFER == 0)
+            {
                 value = realloc(value, strlen(value) + NEXT_BUFFER);
+                if (value == NULL)
+                {
+                    free(key);
+                    return "nil";
+                }
             }
 
             strncat(value, &input[index], 1);

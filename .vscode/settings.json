@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.jel": "julia",
-        "string.h": "c"
+        "string.h": "c",
+        "stdlib.h": "c"
     }
 }

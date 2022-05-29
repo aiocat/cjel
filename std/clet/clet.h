@@ -16,7 +16,8 @@
 #define CLET_H
 
 #include "./map/src/map.c"
-#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 const char* clet_init(const char* _);

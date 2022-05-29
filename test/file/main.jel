@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import(../../std/clet/wrapper.jel)
+# import(../../std/clet/wrapper.jel)
 
 # initialize
-:clet.init()
+# :clet.init()
+# :clet.set(path ..\ffi\test.c)
 
-# make variable
-:clet.set(alinan input("isim: "))
-print(:clet.get(alinan))
+if(not(file.exists(./deneme.txt)) do(
+    file.make(./deneme.txt)
+    file.write(./deneme.txt "nabeeer???")
+) file.remove(./deneme.txt))
+
 # free
-:clet.free()
-
-let(thing 10)
-# drop(thing)
-print(get(thing))
+# :clet.free()

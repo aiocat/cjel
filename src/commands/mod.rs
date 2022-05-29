@@ -21,3 +21,4 @@ pub mod iterate;
 pub mod math;
 pub mod stdio;
 pub mod variable;
+pub mod fs;

@@ -122,6 +122,12 @@ impl Machine {
                 "*" => self.mul(command.arguments),
                 "/" => self.div(command.arguments),
                 "%" => self.r#mod(command.arguments),
+                // from commands/fs.rs
+                "file.read" => self.readf(command.arguments),
+                "file.write" => self.writef(command.arguments),
+                "file.exists" => self.existsf(command.arguments),
+                "file.make" => self.makef(command.arguments),
+                "file.remove" => self.removef(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     // check arguments

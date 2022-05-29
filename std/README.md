@@ -16,3 +16,10 @@
 
 # jel/std
 Standart libraries for Jel, mostly written in C and includes a Jel wrapper to make it easy-to-use.
+
+## Libraries
+- (std/clet)[https://github.com/aiocat/jel/tree/main/std/clet]
+- (std/obj)[https://github.com/aiocat/jel/tree/main/std/obj]
+
+## Unsafe
+If a library contains unsafe codes, You may have a memory problem while using a `unsafe` library. We are trying to minimize this but `C` doesn't guarantee memory safety. `unsafe` codes are mostly for better performance, less memory usage.

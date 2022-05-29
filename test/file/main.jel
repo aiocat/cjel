@@ -14,11 +14,7 @@
 
 # import(../../std/clet/wrapper.jel)
 
-file.make(./deneme_1.txt)
-let(content "")
-
-for(100000 __num__ do(
-    let(content ("" get(content) get(__num__) "\n"))
-))
-
-file.write(./deneme_1.txt get(content))
+file.make(./deneme.txt)
+print(file.type(./deneme.txt))
+print(file.type(../ffi))
+print(file.type(./not_exists.tx))

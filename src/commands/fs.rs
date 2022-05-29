@@ -119,4 +119,27 @@ impl machine::Machine {
         // remove
         crate::to_token!(fs::remove_file(first_arg).is_ok())
     }
+
+    // run "file.type" command
+    pub fn typef(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 1 {
+            debug::send_argc_message("file.type", 1);
+        }
+
+        // get arguments
+        let first_arg = self.token_to_string(callback.pop().unwrap());
+
+        // check if exists
+        match fs::metadata(first_arg) {
+            Ok(metadata) => {
+                if metadata.is_dir() {
+                    crate::to_token!("dir")
+                } else {
+                    crate::to_token!("file")
+                }
+            }
+            Err(_) => crate::nil_token!()
+        }
+    }
 }

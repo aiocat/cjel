@@ -21,23 +21,16 @@ function(:clet.init () do(
 ))
 
 # set value 
-function(:clet.set (__clet_key__ __clet_value__) do(
-    native(:clet clet_set (" " get(__clet_key__) get(__clet_value__)))
+function(:clet.set (__:clet.set_key__ __:clet.set_value__) do(
+    native(:clet clet_set (" " get(__:clet.set_key__) get(__:clet.set_value__)))
 ))
 
 # get value 
-function(:clet.get (__clet_key__) do(
-    native(:clet clet_get get(__clet_key__))
+function(:clet.get (__:clet.get_key__) do(
+    native(:clet clet_get get(__:clet.get_key__))
 ))
 
 # free clet 
 function(:clet.free () do(
     native(:clet clet_free "")
 ))
-
-# make them public
-pubf(:clet.init)
-pubf(:clet.set)
-pubf(:clet.get)
-pubf(:clet.free)
-pubd(:clet)

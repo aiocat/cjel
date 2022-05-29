@@ -83,24 +83,22 @@ impl Machine {
         // check if its a command
         if let parser::Token::Command(mut command) = token {
             match command.name.as_str() {
-                // from commands/stdio.rs
+                // from commands/process.rs
                 "print" => self.print(command.arguments),
                 "input" => self.input(command.arguments),
+                "sleep" => self.sleep(command.arguments),
                 // from commands/variable.rs
                 "let" => self.r#let(command.arguments),
                 "get" => self.get(command.arguments),
                 "clone" => self.clone(command.arguments),
                 "drop" => self.drop(command.arguments),
-                "pubv" => self.pubv(command.arguments),
                 // from commands/function.rs
                 "do" => self.r#do(command.arguments),
                 "function" => self.function(command.arguments),
                 "call" => self.call(command.arguments),
-                "pubf" => self.pubf(command.arguments),
                 // from commands/dylib.rs
                 "dylib" => self.dylib(command.arguments),
                 "native" => self.native(command.arguments),
-                "pubd" => self.pubd(command.arguments),
                 // from commands/import.rs
                 "import" => self.import(command.arguments),
                 // from commands/compare.rs

@@ -22,17 +22,13 @@ use crate::parser;
 #[derive(Debug)]
 pub struct VariableData {
     pub value: String, // variable value
-    pub public: bool,  // if it is, this data will visible to all .jel files
 }
 
 // variable functions
 impl VariableData {
     // create new variable data
     pub fn new(value: String) -> Self {
-        Self {
-            value,
-            public: false,
-        }
+        Self { value }
     }
 
     // take variable
@@ -65,34 +61,6 @@ impl machine::Machine {
         taken.insert(variable_name, VariableData::new(variable_value));
         self.variables.set(taken);
 
-        crate::nil_token!()
-    }
-
-    // run "pubv" command
-    pub fn pubv(&self, mut callback: Vec<parser::Token>) -> parser::Token {
-        // give error message if argument count is not matching
-        if callback.len() != 1 {
-            debug::send_argc_message("pubv", 1);
-        }
-
-        // get argument
-        let first_arg = callback.pop().unwrap();
-
-        // get variable name
-        let variable_name = self.token_to_string(first_arg);
-
-        // toggle visibility
-        let mut taken = self.variables.take();
-        match taken.get_mut(&variable_name) {
-            Some(data) => data.public = !data.public,
-            None => debug::send_message(&format!(
-                "variable \"{variable_name}\" doesn't exists. (yet?)"
-            )),
-        }
-
-        self.variables.set(taken);
-
-        // return nil
         crate::nil_token!()
     }
 

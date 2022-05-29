@@ -15,10 +15,10 @@
 pub mod cast;
 pub mod compare;
 pub mod dylib;
+pub mod fs;
 pub mod function;
 pub mod import;
 pub mod iterate;
 pub mod math;
-pub mod stdio;
+pub mod process;
 pub mod variable;
-pub mod fs;

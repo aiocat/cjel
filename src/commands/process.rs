@@ -16,6 +16,8 @@ use crate::debug;
 use crate::machine;
 use crate::parser;
 use std::io::{stdin, stdout, Write};
+use std::thread::sleep;
+use std::time::Duration;
 
 impl machine::Machine {
     // run "print" command
@@ -69,5 +71,23 @@ impl machine::Machine {
         }
 
         crate::to_token!(input)
+    }
+
+    // run "sleep" command
+    pub fn sleep(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 1 {
+            debug::send_argc_message("sleep", 1);
+        }
+
+        let first_arg = self.token_to_string(callback.pop().unwrap());
+
+        // sleep
+        match first_arg.parse::<u64>() {
+            Ok(time) => sleep(Duration::from_millis(time)),
+            Err(_) => return crate::nil_token!(),
+        }
+
+        crate::nil_token!()
     }
 }

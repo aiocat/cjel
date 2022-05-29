@@ -16,6 +16,7 @@
 #define CLET_H
 
 #include "./map/src/map.c"
+#include "./str/src/str.c"
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>

@@ -1,3 +1,6 @@
 [submodule "std/clet/map"]
 	path = std/clet/map
 	url = git@github.com:rxi/map.git
+[submodule "std/clet/str"]
+	path = std/clet/str
+	url = git@github.com:aiocat/str.git

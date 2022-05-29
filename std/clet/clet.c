@@ -15,8 +15,6 @@
  */
 
 #include "clet.h"
-#define BYTE_BUFFER 1024
-#define NEXT_BUFFER sizeof(char) * 1024
 
 map_str_t variables;
 
@@ -28,8 +26,8 @@ const char *clet_init(const char *_)
 
 const char *clet_set(const char *input)
 {
-    char *key = malloc(BYTE_BUFFER + 1);
-    char *value = malloc(BYTE_BUFFER + 1);
+    struct str* key = str_new();
+    struct str* value = str_new();
 
     if (key == NULL && value == NULL)
     {
@@ -37,20 +35,16 @@ const char *clet_set(const char *input)
     }
     else if (value == NULL)
     {
-        free(key);
+        str_free(key);
         return "nil";
     }
     else if (key == NULL)
     {
-        free(value);
+        str_free(value);
         return "nil";
     }
 
-    *key = 0;
-    *value = 0;
-
     size_t index = 0;
-    size_t value_index = 0;
     uint8_t status = 0;
     while (input[index] != '\0')
     {
@@ -60,40 +54,22 @@ const char *clet_set(const char *input)
             {
                 status = 1;
                 index++;
+
+                if (strcmp(clet_get(key->memory), "nil") != 0)
+                    map_remove(&variables, key->memory);
+
                 continue;
             }
 
-            if (index != 0 && index % BYTE_BUFFER == 0)
-            {
-                key = realloc(key, strlen(key) + NEXT_BUFFER);
-                if (key == NULL)
-                {
-                    free(value);
-                    return "nil";
-                }
-            }
-
-            strncat(key, &input[index], 1);
+            str_push(key, &input[index]);
         }
         else
         {
-            if (value_index != 0 && value_index % BYTE_BUFFER == 0)
-            {
-                value = realloc(value, strlen(value) + NEXT_BUFFER);
-                if (value == NULL)
-                {
-                    free(key);
-                    return "nil";
-                }
-            }
-
-            strncat(value, &input[index], 1);
-            value_index++;
+            str_push(value, &input[index]);
         }
-        index++;
     }
 
-    map_set(&variables, key, value);
+    map_set(&variables, key->memory, value->memory);
     return "nil";
 }
 

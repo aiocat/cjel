@@ -20,7 +20,6 @@ use crate::parser;
 #[derive(Debug, Clone)]
 pub struct FunctionData {
     pub arguments: Vec<String>, // function arguments
-    pub public: bool,           // if it is, this data will visible to all .jel files
     pub value: parser::Token,   // uses rc to share token without memory-cost
 }
 
@@ -30,13 +29,12 @@ impl FunctionData {
     pub fn new(value: parser::Token, args: Vec<String>) -> Self {
         Self {
             value,
-            public: false,
             arguments: args,
         }
     }
 
     // return function value
-    pub fn get(&mut self) -> parser::Token {
+    pub fn get(&self) -> parser::Token {
         // clone variable reference count
         self.value.clone()
     }
@@ -103,36 +101,6 @@ impl machine::Machine {
         crate::nil_token!()
     }
 
-    // run "pubf" command
-    pub fn pubf(&self, mut callback: Vec<parser::Token>) -> parser::Token {
-        // give error message if argument count is not matching
-        if callback.len() != 1 {
-            debug::send_argc_message("pubf", 1);
-        }
-
-        // get argument (reversed)
-        let first_arg = callback.pop().unwrap();
-
-        // get function name
-        let function_name = self.token_to_string(first_arg);
-
-        // toggle function visibility
-        let mut taken = self.functions.take();
-        match taken.get_mut(&function_name) {
-            Some(data) => data.public = !data.public,
-            None => {
-                debug::send_message(&format!(
-                    "function \"{function_name}\" doesn't exists. (yet?)"
-                ));
-            }
-        };
-
-        self.functions.set(taken);
-
-        // return nil
-        crate::nil_token!()
-    }
-
     // run "call" command
     pub fn call(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // give error message if argument count is not matching
@@ -148,11 +116,11 @@ impl machine::Machine {
         let function_name = self.token_to_string(first_arg);
 
         // return variable value
-        let mut taken = self.functions.take();
-        let result = match taken.get_mut(&function_name) {
+        let taken = self.functions.take();
+        let (variables, result) = match taken.get(&function_name) {
             Some(data) => {
                 //get function arguments
-                let function_args = data.arguments.iter();
+                let function_args = data.arguments.clone();
 
                 // check argument count
                 if callback.len() != function_args.len() {
@@ -162,29 +130,26 @@ impl machine::Machine {
                         function_args.len(),
                         callback.len()
                     ));
-                    return parser::Token::String(String::new());
-                }
-
-                // set variables
-                for argument in function_args {
-                    self.r#let(vec![
-                        parser::Token::String(argument.clone()),
-                        callback.pop().unwrap(),
-                    ]);
                 }
 
                 // return command
-                data.get()
+                (function_args, data.get())
             }
             None => {
                 debug::send_message(&format!(
                     "function \"{function_name}\" doesn't exists. (yet?)"
                 ));
-                parser::Token::String(String::new())
+                panic!();
             }
         };
-
         self.functions.set(taken);
+
+        for argument in variables {
+            self.r#let(vec![
+                parser::Token::String(argument.clone()),
+                callback.pop().unwrap(),
+            ]);
+        }
 
         // call command
         self.process(result)

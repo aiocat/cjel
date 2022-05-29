@@ -1,5 +1,5 @@
 // Copyright (c) 2022 aiocat
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
@@ -25,7 +25,7 @@ impl machine::Machine {
 
         match read {
             Ok(content) => crate::to_token!(String::from_utf8_lossy(&content)),
-            Err(_) => crate::nil_token!()
+            Err(_) => crate::nil_token!(),
         }
     }
 

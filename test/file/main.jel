@@ -14,7 +14,8 @@
 
 # import(../../std/clet/wrapper.jel)
 
-file.make(./deneme.txt)
-print(file.type(./deneme.txt))
-print(file.type(../ffi))
-print(file.type(./not_exists.tx))
+print(type(10))
+print(type(10.3))
+print(type(true))
+print(type(nil))
+print(type(qwe))

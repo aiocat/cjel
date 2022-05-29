@@ -114,6 +114,7 @@ impl Machine {
                 "float" => self.float(command.arguments),
                 "int" => self.int(command.arguments),
                 "bool" => self.bool(command.arguments),
+                "type" => self.r#type(command.arguments),
                 // from commands/math.rs
                 "+" => self.add(command.arguments),
                 "-" => self.sub(command.arguments),

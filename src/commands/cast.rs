@@ -115,4 +115,31 @@ impl machine::Machine {
             }
         }
     }
+
+    // run "type" command
+    pub fn r#type(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 1 {
+            debug::send_argc_message("type", 1);
+        }
+
+        let will_converted = self.token_to_string(callback.pop().unwrap());
+        let will_converted = will_converted.as_str();
+
+        // check if boolean
+        match will_converted {
+            "true" | "false" => crate::to_token!("bool"),
+            "nil" => crate::nil_token!(),
+            otherwise => {
+                // try convert to integer, float or string
+                if let Ok(_) = otherwise.parse::<isize>() {
+                    crate::to_token!("int")
+                } else if let Ok(_) = otherwise.parse::<f64>() {
+                    crate::to_token!("float")
+                } else {
+                    crate::to_token!("string")
+                }
+            }
+        }
+    }
 }

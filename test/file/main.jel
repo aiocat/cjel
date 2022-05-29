@@ -12,28 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import(../../std/clet/wrapper.jel)
+# import(../../std/clet/wrapper.jel)
 
-# initialize
-:clet.init()
+file.make(./deneme_1.txt)
+let(content "")
 
-# if(not(file.exists(./deneme.txt)) do(
-#     file.make(./deneme.txt)
-#     file.write(./deneme.txt "nabeeer???")
-# ) file.remove(./deneme.txt))
-
-file.make(./deneme.txt)
-# while(true do(
-#     file.write(./deneme.txt ("\n" file.read(./deneme.txt) "Naber!"))
-#     sleep(1000)
-# ))
-
-for(1000000 __num__ do(
-    :clet.set(number get(__num__))
-    :clet.set(content ("" :clet.get(content) ("" :clet.get(number) "\n")))
-    file.write(./deneme.txt :clet.get(content))
-    print(:clet.get(number))
+for(100000 __num__ do(
+    let(content ("" get(content) get(__num__) "\n"))
 ))
 
-# free
-:clet.free()
+file.write(./deneme_1.txt get(content))

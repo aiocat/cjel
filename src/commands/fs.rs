@@ -44,6 +44,29 @@ impl machine::Machine {
         crate::to_token!(fs::write(first_arg, second_arg).is_ok())
     }
 
+    // run "file.append" command
+    pub fn appendf(&self, mut callback: Vec<parser::Token>) -> parser::Token {
+        // check argument count
+        if callback.len() != 2 {
+            debug::send_argc_message("file.append", 2);
+        }
+
+        // get arguments
+        let second_arg = self.token_to_string(callback.pop().unwrap());
+        let first_arg = self.token_to_string(callback.pop().unwrap());
+
+        // read + write file
+        let read = fs::read(&first_arg);
+
+        match read {
+            Ok(mut content) => {
+                content.extend(second_arg.as_bytes());
+                crate::to_token!(fs::write(first_arg, content).is_ok())
+            },
+            Err(_) => crate::nil_token!()
+        }
+    }
+
     // run "file.make" command
     pub fn makef(&self, mut callback: Vec<parser::Token>) -> parser::Token {
         // check argument count

@@ -126,6 +126,7 @@ impl Machine {
                 "file.exists" => self.existsf(command.arguments),
                 "file.make" => self.makef(command.arguments),
                 "file.remove" => self.removef(command.arguments),
+                "file.append" => self.appendf(command.arguments),
                 // empty command is for concat objects
                 "" => {
                     // check arguments

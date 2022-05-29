@@ -15,7 +15,7 @@
 -->
 
 # Jel
-Fast, flexible, memory-safe, easy-to-use, interpreted programming language. _work in progress_
+Flexible, memory-safe, easy-to-use, interpreted programming language. _work in progress_
 
 ## Example
 Hello World:
